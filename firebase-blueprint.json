@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "ExerciseLog": {
+      "title": "Exercise Log",
+      "description": "A single logged exercise within a workout session",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User ID of the logging athlete"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date string (e.g. YYYY-MM-DD)"
+        },
+        "exerciseType": {
+          "type": "string",
+          "description": "TREINO A or TREINO B"
+        },
+        "exerciseName": {
+          "type": "string",
+          "description": "The exact name of the selected exercise"
+        },
+        "warmup1Weight": {
+          "type": "number",
+          "description": "Weight used in first warmup set"
+        },
+        "warmup1Reps": {
+          "type": "number",
+          "description": "Reps performed in first warmup set"
+        },
+        "warmup2Weight": {
+          "type": "number",
+          "description": "Weight used in second warmup set"
+        },
+        "warmup2Reps": {
+          "type": "number",
+          "description": "Reps performed in second warmup set"
+        },
+        "work1Weight": {
+          "type": "number",
+          "description": "Weight used in first working set"
+        },
+        "work1Reps": {
+          "type": "number",
+          "description": "Reps performed in first working set"
+        },
+        "work2Weight": {
+          "type": "number",
+          "description": "Weight used in second working set"
+        },
+        "work2Reps": {
+          "type": "number",
+          "description": "Reps performed in second working set"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": [
+        "userId",
+        "date",
+        "exerciseType",
+        "exerciseName",
+        "warmup1Weight",
+        "warmup1Reps",
+        "warmup2Weight",
+        "warmup2Reps",
+        "work1Weight",
+        "work1Reps",
+        "work2Weight",
+        "work2Reps",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "exercise_logs/{logId}": {
+      "schema": {
+        "$ref": "#/entities/ExerciseLog"
+      },
+      "description": "Collection of all exercise logs for all users."
+    }
+  }
+}

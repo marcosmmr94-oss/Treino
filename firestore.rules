@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidExerciseLog(data) {
+      return data.userId is string && data.userId == request.auth.uid
+        && data.date is string && data.date.size() <= 12 
+        && data.exerciseType is string && data.exerciseType.size() <= 32
+        && data.exerciseName is string && data.exerciseName.size() <= 128
+        && data.warmup1Weight is number && data.warmup1Reps is number
+        && data.warmup2Weight is number && data.warmup2Reps is number
+        && data.work1Weight is number && data.work1Reps is number
+        && data.work2Weight is number && data.work2Reps is number
+        && data.createdAt is timestamp;
+    }
+
+    match /exercise_logs/{logId} {
+      allow get: if isAuthenticated() 
+                 && isValidId(logId) 
+                 && existing().userId == request.auth.uid;
+                 
+      allow list: if isAuthenticated() 
+                  && resource.data.userId == request.auth.uid;
+
+      allow create: if isAuthenticated() 
+                    && isValidId(logId)
+                    && incoming().keys().hasAll(['userId', 'date', 'exerciseType', 'exerciseName', 'warmup1Weight', 'warmup1Reps', 'warmup2Weight', 'warmup2Reps', 'work1Weight', 'work1Reps', 'work2Weight', 'work2Reps', 'createdAt'])
+                    && incoming().keys().size() == 13
+                    && isValidExerciseLog(incoming())
+                    && incoming().createdAt == request.time;
+
+      allow update: if isAuthenticated() 
+                    && isValidId(logId)
+                    && existing().userId == request.auth.uid
+                    && isValidExerciseLog(incoming())
+                    && incoming().userId == existing().userId
+                    && incoming().createdAt == existing().createdAt
+                    && incoming().diff(existing()).affectedKeys().hasOnly(['date', 'exerciseType', 'exerciseName', 'warmup1Weight', 'warmup1Reps', 'warmup2Weight', 'warmup2Reps', 'work1Weight', 'work1Reps', 'work2Weight', 'work2Reps']);
+
+      allow delete: if isAuthenticated() 
+                    && isValidId(logId)
+                    && existing().userId == request.auth.uid;
+    }
+
+    match /water_logs/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+  }
+}

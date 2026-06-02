@@ -1,0 +1,8 @@
+{
+  "name": "DarkFit Tracker",
+  "description": "Hypertrophy workout tracker with Firebase integration, tailored for specific gym machines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
